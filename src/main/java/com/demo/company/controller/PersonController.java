@@ -64,7 +64,7 @@ public class PersonController {
     }
 
     @RequestMapping(value = PersonControllerPath.DELETE_BY_CODE, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse deleteByPersonCode(@RequestParam String code) throws Exception {
+    public BaseResponse deleteByPersonCode(@PathVariable String code) throws Exception {
         this.personService.deleteByPersonCode(code);
         return new BaseResponse(null, null, true, "");
     }
@@ -73,6 +73,8 @@ public class PersonController {
         return Optional.ofNullable(person).map(p -> {
             PersonDTO dto = PersonDTO.builder().build();
             BeanUtils.copyProperties(p, dto);
+            AddressDTO[] addresses = Arrays.stream(p.getAddresses()).map(o -> toDTO(o)).toArray(size -> new AddressDTO[size]);
+            dto.setAddresses(addresses);
             return dto;
         }).orElse(null);
     }
@@ -89,11 +91,7 @@ public class PersonController {
         return Optional.ofNullable(dto).map(d -> {
             Person person = Person.builder().build();
             BeanUtils.copyProperties(d, person);
-//            Address[] addresses = Arrays.stream(dto.getAddresses()).map(o -> toAddress(o)).toArray(size -> new Address[size]);
-            Address[] addresses = new Address[dto.getAddresses().length];
-            for(int i = 0; i < addresses.length; i++){
-                addresses[i] = toAddress(dto.getAddresses()[i]);
-            }
+            Address[] addresses = Arrays.stream(dto.getAddresses()).map(o -> toAddress(o)).toArray(size -> new Address[size]);
             person.setAddresses(addresses);
             return person;
         }).orElse(null);

@@ -47,32 +47,4 @@ public class PersonServiceBean implements PersonService {
     public void deleteByPersonCode(String personCode) throws Exception{
         this.personRepository.deleteByPersonCode(personCode);
     }
-
-//    @Override
-//    public void update(Integer empNo, Employee employee) throws Exception {
-//        Employee oldEmp = employeeRepository.findFirstByEmpNoAndMarkForDeleteFalse(empNo);
-//        oldEmp.setEmpName(employee.getEmpName());
-//        oldEmp.setJob(employee.getJob());
-//        oldEmp.setMgr(employee.getMgr());
-//        oldEmp.setHireDate(employee.getHireDate());
-//        oldEmp.setSal(employee.getSal());
-//        oldEmp.setComm(employee.getComm());
-//        oldEmp.setDepartment(employee.getDepartment());
-//        employeeRepository.save(oldEmp);
-//    }
-//
-//    @Override
-//    public Page<Employee> find(Pageable pageable) throws Exception {
-//        return employeeRepository.findByMarkForDeleteFalse(pageable);
-//    }
-//
-//    @Override
-//    public Employee findByCode(Integer code) throws Exception {
-//        return employeeRepository.findFirstByEmpNoAndMarkForDeleteFalse(code);
-//    }
-//
-//    @Override
-//    public void deleteByEmpNo(Integer code) throws Exception {
-//        this.employeeRepository.deleteByEmpNo(code);
-//    }
 }
