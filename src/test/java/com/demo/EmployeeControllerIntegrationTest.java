@@ -1,4 +1,4 @@
-package com.blibli.demo;
+package com.demo;
 
 import com.demo.DemoApplication;
 import com.demo.base.BaseResponse;
@@ -70,8 +70,6 @@ public class EmployeeControllerIntegrationTest {
         employeeRepository.deleteAll();
 //    mongoTemplate.indexOps(Employee.class).ensureIndex(TextIndexDefinition.builder().onField("empNo").build());
         mongoTemplate.indexOps(Employee.class).ensureIndex(new Index("empNo", Sort.Direction.ASC).unique());
-
-
     }
 
     @Test
@@ -97,30 +95,31 @@ public class EmployeeControllerIntegrationTest {
         Assert.assertEquals(EMP_NAME, employee.getEmpName());
     }
 
-    // Still failed
     @Test
     public void createEmployee_failed_returnBaseResponse() throws Exception {
-        EmployeeUpdateRequest request;
+        EmployeeCreateRequest request;
         DepartmentRequest departmentRequest;
         departmentRequest =
                 DepartmentRequest.builder().deptName(DEPT_NAME).deptNo(DEPT_NO).loc(LOC).build();
-        request = EmployeeUpdateRequest.builder().empName(EMP_NAME).comm(COMM)
+        request = EmployeeCreateRequest.builder().empNo(EMP_NO).empName(EMP_NAME).comm(COMM)
                 .department(departmentRequest).job(JOB).mgr(MGR).sal(SAL).build();
 
+        Employee employee = Employee.builder().empNo(EMP_NO).empName(EMP_NAME).comm(COMM)
+                .job(JOB).mgr(MGR).sal(SAL).build();
+
+        employeeRepository.save(employee);
         ValidatableResponse validatableResponse =
                 RestAssured.given().contentType("application/json").queryParam(STORE_ID_KEY, STORE_ID_VALUE)
                         .queryParam(CHANNEL_ID_KEY, CHANNEL_ID_VALUE).queryParam(CLIENT_ID, CLIENT_ID_VALUE)
                         .queryParam(REQUEST_ID_KEY, REQUEST_ID_VALUE).queryParam(USERNAME_KEY, USERNAME_VALUE)
-                        .body(request).post(CONTEXT_PATH + EmployeeControllerPath.BASE_PATH + "/" + EMP_NO ).then();
+                        .body(request).post(CONTEXT_PATH + EmployeeControllerPath.BASE_PATH).then();
 
+//        System.out.println(validatableResponse.extract().asString());
         BaseResponse baseResponse =
                 objectMapper.readValue(validatableResponse.extract().asString(), BaseResponse.class);
-        Assert.assertTrue(baseResponse.getErrorCode() != null);
-        Employee employee = employeeRepository.findFirstByEmpNoAndMarkForDeleteFalse(EMP_NO);
-        Assert.assertEquals(EMP_NAME, employee.getEmpName());
+        Assert.assertFalse(baseResponse.isSuccess());
     }
 
-    // Still failed
     @Test
     public void updateEmployeeByEmpNo_success_returnBaseResponse() throws Exception {
         EmployeeUpdateRequest request;
@@ -129,18 +128,22 @@ public class EmployeeControllerIntegrationTest {
                 DepartmentRequest.builder().deptName(DEPT_NAME).deptNo(DEPT_NO).loc(LOC).build();
         request = EmployeeUpdateRequest.builder().empName(EMP_NAME).comm(COMM)
                 .department(departmentRequest).job(JOB).mgr(MGR).sal(SAL).build();
+        Employee employee = Employee.builder().empNo(EMP_NO).empName(EMP_NAME).comm(COMM)
+                                .job(JOB).mgr(MGR).sal(SAL).build();
 
+        employeeRepository.save(employee);
         ValidatableResponse validatableResponse =
                 RestAssured.given().contentType("application/json").queryParam(STORE_ID_KEY, STORE_ID_VALUE)
                         .queryParam(CHANNEL_ID_KEY, CHANNEL_ID_VALUE).queryParam(CLIENT_ID, CLIENT_ID_VALUE)
                         .queryParam(REQUEST_ID_KEY, REQUEST_ID_VALUE).queryParam(USERNAME_KEY, USERNAME_VALUE)
                         .body(request).put(CONTEXT_PATH + EmployeeControllerPath.BASE_PATH + "/" + EMP_NO ).then();
 
+//        System.out.println(validatableResponse.extract().asString());
         BaseResponse baseResponse =
                 objectMapper.readValue(validatableResponse.extract().asString(), BaseResponse.class);
         Assert.assertTrue(baseResponse.isSuccess());
-        Employee employee = employeeRepository.findFirstByEmpNoAndMarkForDeleteFalse(EMP_NO);
-        Assert.assertEquals(EMP_NAME, employee.getEmpName());
+        employee = employeeRepository.findFirstByEmpNoAndMarkForDeleteFalse(EMP_NO);
+        Assert.assertTrue(employee.getDepartment() != null);
     }
 
 }

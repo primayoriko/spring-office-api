@@ -43,16 +43,24 @@ public class EmployeeController {
 	public BaseResponse create(@RequestParam String storeId, @RequestParam String channelId,
 			@RequestParam String clientId, @RequestParam String requestId, @RequestParam String username,
 			@RequestBody EmployeeCreateRequest request) throws Exception {
-		this.employeeService.create(toEmployee(request));
-		return new BaseResponse(null, null, true, requestId);
+		try {
+			this.employeeService.create(toEmployee(request));
+			return new BaseResponse(null, null, true, requestId);
+		} catch(Exception e) {
+			return new BaseResponse(e.getMessage(), "500", false, requestId);
+		}
 	}
 
 	@RequestMapping(value = EmployeeControllerPath.UPDATE_BY_CODE, method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public BaseResponse updateByEmpNo(@RequestParam String storeId, @RequestParam String channelId,
 			@RequestParam String clientId, @RequestParam String requestId, @RequestParam String username, @PathVariable Integer code,
 			@RequestBody EmployeeUpdateRequest request) throws Exception {
-		this.employeeService.update(code, toEmployee(request));
-		return new BaseResponse(null, null, true, requestId);
+		try {
+			this.employeeService.update(code, toEmployee(request));
+			return new BaseResponse(null, null, true, requestId);
+		} catch(Exception e) {
+			return new BaseResponse(e.getMessage(), "404", false, requestId);
+		}
 	}
 
 	@RequestMapping(value = EmployeeControllerPath.UPDATE_NAME_BY_CODE, method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
