@@ -20,7 +20,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MongoBaseEntity implements Serializable {
-
 	public static final String FIELD_ID = "id";
 	public static final String FIELD_MARK_FOR_DELETE = "markForDelete";
 	public static final String FIELD_VERSION = "version";
